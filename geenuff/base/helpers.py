@@ -40,7 +40,6 @@ def make_enum(name, *args):
 
 
 ##### General #####
-import dustdas.fastahelper
 
 
 def sequence_hash(sequence):
@@ -184,7 +183,16 @@ def two_way_key_match(known_keys, other_keys):
 
 
 def get_seqids_from_gff(gfffile):
-    seqids = set(pd.read_table(gfffile, dtype=str, sep='\t', comment='#', on_bad_lines='warn').iloc[:,0])
+    seqids = set(
+        pd.read_table(
+            gfffile,
+            dtype=str,
+            sep='\t',
+            header=None,
+            comment='#',
+            on_bad_lines='warn'
+        ).iloc[:,0]
+    )
     return seqids
 
 

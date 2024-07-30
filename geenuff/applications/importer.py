@@ -3,6 +3,10 @@ import math
 import logging
 import shutil
 import sys
+import pandas as pd
+from Bio import SeqIO
+from collections import namedtuple
+import gzip
 
 import intervaltree
 from pprint import pprint  # for debugging
@@ -10,7 +14,6 @@ from abc import ABC, abstractmethod
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from dustdas import gffhelper, fastahelper
 from .. import orm
 from .. import types
 from .. import helpers
@@ -54,6 +57,14 @@ class InsertCounterHolder(object):
     transcript_piece = helpers.Counter(orm.TranscriptPiece)
     genome = helpers.Counter(orm.Genome)
 
+def get_gff_entry_parent(entry):
+    return dict(a.split('=') for a in entry.attribute.split(';')).get('Parent')
+
+def count_gff_entry_parent(entry):
+    return sum(tag=='Parent' for tag, _ in (a.split('=') for a in entry.attribute.split(';')))
+
+def get_gff_entry_id(entry):
+    return dict(a.split('=') for a in entry.attribute.split(';'))['ID']
 
 class OrganizedGeenuffImporterGroup(object):
     """Stores the handler objects for a super locus in an organized fashion.
@@ -99,7 +110,7 @@ class OrganizedGeenuffImporterGroup(object):
 
         sl_start, sl_end = get_geenuff_start_end(sl.start, sl.end, sl_is_plus_strand)
         sl_i = self.importers['super_locus'] = SuperLocusImporter(entry_type=sl.type,
-                                                                  given_name=sl.get_ID(),
+                                                                  given_name=get_gff_entry_id(sl),
                                                                   coord=self.coord,
                                                                   is_plus_strand=sl_is_plus_strand,
                                                                   start=sl_start,
@@ -108,11 +119,11 @@ class OrganizedGeenuffImporterGroup(object):
         for t, t_entries in entries['transcripts'].items():
             t_importers = {'errors': []}
             # check for multi inheritance and throw NotImplementedError if found
-            if t.get_Parent() is None:
-                raise GFFValidityError(f"transcript level feature without Parent found {t}, attributes: {t.attributes}")
-            if len(t.get_Parent()) > 1:
+            if get_gff_entry_parent(t) is None:
+                raise GFFValidityError(f"transcript level feature without Parent found {t}, attributes: {t.attribute}")
+            if count_gff_entry_parent(t) > 1:
                 raise NotImplementedError
-            t_id = t.get_ID()
+            t_id = get_gff_entry_id(t)
             t_is_plus_strand = get_strand_direction(t)
             # create transcript handler
             t_i = TranscriptImporter(entry_type=t.type,
@@ -287,18 +298,18 @@ class OrganizedGeenuffImporterGroup(object):
 
     @staticmethod
     def _get_protein_id_from_cds_entry(cds_entry):
+
+        def list_gff_entry_tag(entry, tag):
+            return [v for t, v in (a.split('=') for a in cds_entry.attribute.split(';')) if t==tag]
+
         # check if anything is labeled as protein_id
-        protein_id = cds_entry.attrib_filter(tag='protein_id')
+        protein_id = list_gff_entry_tag(cds_entry, 'protein_id')
         # failing that, try and get parent ID (presumably transcript, maybe gene)
         if not protein_id:
-            protein_id = cds_entry.get_Parent()
+            protein_id = list_gff_entry_tag(cds_entry, 'Parent')
         # hopefully take single hit
         if len(protein_id) == 1:
             protein_id = protein_id[0]
-            if isinstance(protein_id, gffhelper.GFFAttribute):
-                protein_id = protein_id.value
-                assert len(protein_id) == 1
-                protein_id = protein_id[0]
         # or handle other cases
         elif len(protein_id) == 0:
             protein_id = None
@@ -436,13 +447,22 @@ class OrganizedGFFEntries(object):
 
     def _gff_gen(self):
         known = [x.value for x in types.AllKnownGFFFeatures]
-        reader = gffhelper.read_gff_file(self.gff_file)
-        for entry in reader:
+        gff_fields = ('seqid', 'source', 'type', 'start', 'end', 'score', 'strand', 'phase', 'attribute')
+        Entry = namedtuple('Entry', gff_fields)
+        reader = pd.read_table(
+            self.gff_file,
+            dtype=str,
+            sep='\t',
+            names=gff_fields,
+            comment='#',
+            on_bad_lines='warn'
+        )
+        for _, entry in reader.iterrows():
             if entry.type not in known:
                 raise ValueError("unrecognized feature type from gff: {}".format(entry.type))
             else:
                 self._clean_entry(entry)
-                yield entry
+                yield Entry(*entry)
 
     @staticmethod
     def _clean_entry(entry):
@@ -1030,11 +1050,11 @@ class FastaImporter(object):
             logging.info(f'Added coordinate object for FASTA sequence with seqid {seqid} to the queue')
 
     def parse_fasta(self, seq_file, id_delim=' '):
-        fp = fastahelper.FastaParser()
-        for fasta_header, seq in fp.read_fasta(seq_file):
-            seq = seq.upper()  # this may perform poorly
-            seqid = fasta_header.split(id_delim)[0]
-            yield seqid, seq
+        with (gzip.open if str(seq_file).endswith(".gz") else open)(seq_file) as seq_file_obj:
+            for record in SeqIO.parse(seq_file_obj, "fasta"):
+                seq = str(record.seq).upper()
+                seqid = str(record.id)
+                yield seqid, seq
 
 
 class SuperLocusImporter(Insertable):

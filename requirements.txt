@@ -1,8 +1,8 @@
 intervaltree
-sqlalchemy
+sqlalchemy<2
 numpy
 pandas
-git+https://github.com/janinamass/dustdas@master
+biopython
 # for testing only
 pytest
 pyyaml
