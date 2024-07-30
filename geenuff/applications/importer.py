@@ -7,6 +7,7 @@ import pandas as pd
 from Bio import SeqIO
 from collections import namedtuple
 import gzip
+import zipfile
 
 import intervaltree
 from pprint import pprint  # for debugging
@@ -20,6 +21,31 @@ from .. import helpers
 from ..base.helpers import (get_strand_direction, get_geenuff_start_end, has_start_codon,
                             has_stop_codon, in_enum_values)
 
+def text_or_gzip_open(path, mode='r'):
+    """tries to open file as gzip, zip, then text"""
+    try:
+        # check if we can open and read the file as a gzip file
+        with gzip.open(path, 'r') as tmp:
+            tmp.read(1)  # because gzip won't throw an error until read
+
+        # if so, open it again, this time to return
+        mode += "t"  # maintains same functionality as opening text file
+        f = gzip.open(path, mode)
+
+    except gzip.BadGzipFile:
+        # next try zip
+        try:
+            with zipfile.ZipFile(path) as f_archive:
+                file_names = f_archive.namelist()
+                assert len(file_names) == 1, "only zip files with single component are supported"
+                f = io.TextIOWrapper(f_archive.open(file_names[0], mode))
+
+        except zipfile.BadZipFile:
+            # finally assume text
+            # last because the unicode error is most cryptic
+            f = open(path, mode)
+
+    return f
 
 class GFFValidityError(Exception):
     pass
@@ -1049,7 +1075,7 @@ class FastaImporter(object):
             logging.info(f'Added coordinate object for FASTA sequence with seqid {seqid} to the queue')
 
     def parse_fasta(self, seq_file, id_delim=' '):
-        with (gzip.open if str(seq_file).endswith('.gz') else open)(seq_file) as seq_file_obj:
+        with text_or_gzip_open(seq_file) as seq_file_obj:
             for record in SeqIO.parse(seq_file_obj, 'fasta'):
                 seq = str(record.seq).upper()
                 seqid = str(record.id).split(id_delim)[0]
