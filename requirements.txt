@@ -1,6 +1,7 @@
 intervaltree
 sqlalchemy
 numpy
+pandas
 git+https://github.com/janinamass/dustdas@master
 # for testing only
 pytest
