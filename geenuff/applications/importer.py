@@ -300,7 +300,7 @@ class OrganizedGeenuffImporterGroup(object):
     def _get_protein_id_from_cds_entry(cds_entry):
 
         def list_gff_entry_tag(entry, tag):
-            return [v for t, v in (a.split('=') for a in cds_entry.attribute.split(';')) if t==tag]
+            return [v for t, v in (a.split('=') for a in entry.attribute.split(';')) if t==tag]
 
         # check if anything is labeled as protein_id
         protein_id = list_gff_entry_tag(cds_entry, 'protein_id')
