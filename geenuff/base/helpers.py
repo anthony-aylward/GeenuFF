@@ -189,8 +189,7 @@ def get_seqids_from_gff(gfffile):
             dtype=str,
             sep='\t',
             header=None,
-            comment='#',
-            on_bad_lines='warn'
+            comment='#'
         ).iloc[:,0]
     )
     return seqids

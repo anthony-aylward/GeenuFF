@@ -454,8 +454,7 @@ class OrganizedGFFEntries(object):
             dtype=str,
             sep='\t',
             names=gff_fields,
-            comment='#',
-            on_bad_lines='warn'
+            comment='#'
         )
         for _, entry in reader.iterrows():
             if entry.type not in known:
@@ -1050,8 +1049,8 @@ class FastaImporter(object):
             logging.info(f'Added coordinate object for FASTA sequence with seqid {seqid} to the queue')
 
     def parse_fasta(self, seq_file, id_delim=' '):
-        with (gzip.open if str(seq_file).endswith(".gz") else open)(seq_file) as seq_file_obj:
-            for record in SeqIO.parse(seq_file_obj, "fasta"):
+        with (gzip.open if str(seq_file).endswith('.gz') else open)(seq_file) as seq_file_obj:
+            for record in SeqIO.parse(seq_file_obj, 'fasta'):
                 seq = str(record.seq).upper()
                 seqid = str(record.id)
                 yield seqid, seq
