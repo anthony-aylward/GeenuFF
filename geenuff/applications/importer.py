@@ -1052,7 +1052,7 @@ class FastaImporter(object):
         with (gzip.open if str(seq_file).endswith('.gz') else open)(seq_file) as seq_file_obj:
             for record in SeqIO.parse(seq_file_obj, 'fasta'):
                 seq = str(record.seq).upper()
-                seqid = str(record.id)
+                seqid = str(record.id).split(id_delim)[0]
                 yield seqid, seq
 
 
