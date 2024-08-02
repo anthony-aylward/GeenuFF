@@ -1,8 +1,0 @@
-intervaltree
-sqlalchemy<2
-numpy
-pandas
-biopython
-# for testing only
-pytest
-pyyaml
