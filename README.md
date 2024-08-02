@@ -1,6 +1,14 @@
 # GeenuFF
 Schema and API for a relational db that encodes gene models in an explicit, structured, and robust fashion.
 
+## Installation
+
+```
+conda env create -f rare-geenuff-conda-env.yml
+conda activate rare-geenuff
+pip install rare-geenuff
+```
+
 ## beta disclaimer
 
 GeenuFF is currently _extremely_ beta and very unstable. 
