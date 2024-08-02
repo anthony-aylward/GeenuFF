@@ -23,8 +23,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = ""
-"Documentation" = ""
+"Homepage" = "https://github.com/anthony-aylward/GeenuFF/tree/rare"
+"Documentation" = "https://github.com/anthony-aylward/GeenuFF/tree/rare"
 
 [tool.setuptools]
 packages = [
