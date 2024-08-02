@@ -8,4 +8,3 @@ dependencies:
   - numpy>=1.18.1
   - pandas
   - biopython
-  - pytest>=5.3.4
