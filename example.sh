@@ -34,6 +34,6 @@ done
 # import into databases (the main output will land in <basedir>/output/<species>.sqlite3
 for sp in $species
 do
-  import2geenuff.py --basedir $sp --species $sp
+  rare-geenuff-import --basedir $sp --species $sp
 done
 cd ..
