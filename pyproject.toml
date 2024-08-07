@@ -27,11 +27,9 @@ dependencies = [
 
 [tool.setuptools]
 packages = [
-    "geenuff",
-    "geenuff.base",
-    "geenuff.applications",
-    "geenuff.applications.exporters",
-    "geenuff.tests"
+    "rare_geenuff",
+    "rare_geenuff.base",
+    "rare_geenuff.applications",
+    "rare_geenuff.applications.exporters"
 ]
-package-data = {geenuff = ["testdata/*.fa", "testdata/*.gff3", "testdata/*.gff"]}
 script-files = ["import2geenuff.py"]

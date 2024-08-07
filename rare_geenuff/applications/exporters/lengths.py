@@ -1,6 +1,6 @@
 import numpy
 
-from geenuff.applications.exporter import GeenuffExportController
+from rare_geenuff.applications.exporter import GeenuffExportController
 
 
 class LengthExportController(GeenuffExportController):

@@ -1,11 +1,11 @@
 import sys
 import json
 from abc import ABC, abstractmethod
-from geenuff.applications.exporter import GeenuffExportController
-from geenuff.base.handlers import SuperLocusHandlerBase, TranscriptHandlerBase, CoordinateHandlerBase, \
+from rare_geenuff.applications.exporter import GeenuffExportController
+from rare_geenuff.base.handlers import SuperLocusHandlerBase, TranscriptHandlerBase, CoordinateHandlerBase, \
     FeatureHandlerBase
 
-from geenuff.base.orm import Coordinate, Transcript, SuperLocus
+from rare_geenuff.base.orm import Coordinate, Transcript, SuperLocus
 
 
 class ToJsonable(object):

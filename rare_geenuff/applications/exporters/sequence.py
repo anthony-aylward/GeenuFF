@@ -1,8 +1,8 @@
 import sys
 
-from geenuff.applications.exporter import GeenuffExportController
-from geenuff.base.orm import Coordinate
-from geenuff.base.helpers import reverse_complement, chunk_str
+from rare_geenuff.applications.exporter import GeenuffExportController
+from rare_geenuff.base.orm import Coordinate
+from rare_geenuff.base.helpers import reverse_complement, chunk_str
 
 
 class FastaExportController(GeenuffExportController):

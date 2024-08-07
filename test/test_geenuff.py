@@ -7,13 +7,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 import sqlalchemy
 
-from geenuff import orm
-from geenuff import types
-from geenuff import helpers
-from geenuff.base.orm import (Genome, Feature, Coordinate, Transcript, TranscriptPiece, SuperLocus,
+from rare_geenuff import orm
+from rare_geenuff import types
+from rare_geenuff import helpers
+from rare_geenuff.base.orm import (Genome, Feature, Coordinate, Transcript, TranscriptPiece, SuperLocus,
                         Protein)
-from geenuff.base.handlers import SuperLocusHandlerBase, TranscriptHandlerBase
-from geenuff.applications.importer import ImportController, InsertCounterHolder, OrganizedGFFEntries
+from rare_geenuff.base.handlers import SuperLocusHandlerBase, TranscriptHandlerBase
+from rare_geenuff.applications.importer import ImportController, InsertCounterHolder, OrganizedGFFEntries
 
 @pytest.fixture(scope="session", autouse=True)
 def test_data_dir():

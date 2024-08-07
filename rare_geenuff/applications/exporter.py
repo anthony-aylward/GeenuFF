@@ -8,11 +8,11 @@ from collections import defaultdict
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from geenuff.base.orm import (Coordinate, Genome, Feature, Transcript, TranscriptPiece,
+from rare_geenuff.base.orm import (Coordinate, Genome, Feature, Transcript, TranscriptPiece,
                               association_transcript_piece_to_feature as asso_tp_2_f, SuperLocus)
-from geenuff.base.handlers import TranscriptHandlerBase, SuperLocusHandlerBase
-from geenuff.base.helpers import full_db_path, Counter, in_enum_values
-from geenuff.base import types
+from rare_geenuff.base.handlers import TranscriptHandlerBase, SuperLocusHandlerBase
+from rare_geenuff.base.helpers import full_db_path, Counter, in_enum_values
+from rare_geenuff.base import types
 
 
 class ExportArgParser(object):
