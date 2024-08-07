@@ -1,17 +1,18 @@
 import os
 import pytest
-from ..applications.importer import ImportController
-from ..applications.exporters.sequence import FastaExportController
-from ..applications.exporters.lengths import LengthExportController
-from ..applications.exporters.json import JsonExportController, FeatureJsonable, TranscriptJsonable, SuperLocusJsonable
-from ..applications.exporter import MODES
+from geenuff.applications.importer import ImportController
+from geenuff.applications.exporters.sequence import FastaExportController
+from geenuff.applications.exporters.lengths import LengthExportController
+from geenuff.applications.exporters.json import JsonExportController, FeatureJsonable, TranscriptJsonable, SuperLocusJsonable
+from geenuff.applications.exporter import MODES
 from geenuff.base import orm, types
 import json
 from geenuff.applications.exporter import GeenuffExportController
 
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
-EXPORTING_PFX = 'testdata/exporting.'
-EXONEXONCDS_PFX = 'testdata/exonexonCDS.'
+EXPORTING_PFX = os.path.join(TEST_DATA_DIR, 'exporting.')
+EXONEXONCDS_PFX = os.path.join(TEST_DATA_DIR, 'exonexonCDS.')
 
 EXPORTING_DB = EXPORTING_PFX + 'sqlite3'
 EXONEXONCDS_DB = EXONEXONCDS_PFX + 'sqlite3'
@@ -19,9 +20,6 @@ EXONEXONCDS_DB = EXONEXONCDS_PFX + 'sqlite3'
 
 @pytest.fixture(scope="module", autouse=True)
 def prepare_and_cleanup():
-    if not os.getcwd().endswith('GeenuFF/geenuff'):
-        pytest.exit('Tests need to be run from GeenuFF/geenuff directory')
-
     for pfx in [EXPORTING_PFX, EXONEXONCDS_PFX]:
         if not os.path.exists(pfx + 'sqlite3'):
             controller = ImportController(database_path='sqlite:///' + pfx + 'sqlite3')

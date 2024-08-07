@@ -24,36 +24,14 @@ robust to partial information and biological complexity.
 
 A more extensive description can be found [here](https://weberlab-hhu.github.io/GeenuFF/).
 
-## Install
-GeenuFF has been tested in python3.8
-
-I would recommend installation in a virtual environment.
-https://docs.python-guide.org/dev/virtualenvs/
-
-From a directory of your choice (and preferably in a virtualenv):
-
-Clone and install GeenuFF:
-
+## Unit tests
 ```bash
-git clone https://github.com/weberlab-hhu/GeenuFF.git
+conda install -c conda-forge pytest
+git clone -b rare --single-branch https://github.com/anthony-aylward/GeenuFF.git
 cd GeenuFF
-pip install -r requirements.txt
-python setup.py install
-cd ..
+pytest
 ```
 
-And you might want to run the tests (sorry for the strict directory, will fix)
-```bash
-cd GeenuFF/geenuff
-py.test
-cd ../..
-```
-
-Alternatively, install directly from github via pip:
-
-```bash
-pip install git+https://github.com/weberlab-hhu/GeenuFF.git
-```
 ## usage
 You can run `bash example.sh` for a quick start with public data.
  This will setup the folder 'three_algae', download public data in

@@ -1,4 +1,5 @@
 import os
+import os.path
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy import func
@@ -6,19 +7,17 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 import sqlalchemy
 
-from .. import orm
-from .. import types
-from .. import helpers
-from ..base.orm import (Genome, Feature, Coordinate, Transcript, TranscriptPiece, SuperLocus,
+from geenuff import orm
+from geenuff import types
+from geenuff import helpers
+from geenuff.base.orm import (Genome, Feature, Coordinate, Transcript, TranscriptPiece, SuperLocus,
                         Protein)
-from ..base.handlers import SuperLocusHandlerBase, TranscriptHandlerBase
-from ..applications.importer import ImportController, InsertCounterHolder, OrganizedGFFEntries
-
+from geenuff.base.handlers import SuperLocusHandlerBase, TranscriptHandlerBase
+from geenuff.applications.importer import ImportController, InsertCounterHolder, OrganizedGFFEntries
 
 @pytest.fixture(scope="session", autouse=True)
-def prepare(request):
-    if not os.getcwd().endswith('GeenuFF/geenuff'):
-        pytest.exit('Tests need to be run from GeenuFF/geenuff directory')
+def test_data_dir():
+    return os.path.join(os.path.dirname(__file__), 'data')
 
 
 ### Helper functions ###
@@ -288,9 +287,10 @@ def test_partially_remove_coordinate():
     assert len(sess.query(Coordinate).all()) == 2
 
 
-def test_import_intron_at_seq_end():
+def test_import_intron_at_seq_end(test_data_dir):
     controller = ImportController(database_path='sqlite:///:memory:')
-    controller.add_genome('testdata/intron_at_end.fa', 'testdata/intron_at_end.gff3', clean_gff=True)
+    controller.add_genome(os.path.join(test_data_dir, 'intron_at_end.fa'),
+                          os.path.join(test_data_dir, 'intron_at_end.gff3'), clean_gff=True)
     # one gene model on the + strand
     features = controller.session.query(Feature).filter(Feature.coordinate_id == 1).all()
     # here we have a partial gene model, that runs of the end (or + strand start) fo the
@@ -379,7 +379,7 @@ def test_order_pieces():
     assert op == [piece0, piece1, piece2]
 
 
-def test_fasta_import():
+def test_fasta_import(test_data_dir):
     """Import and test coordinate information from fasta files"""
 
     def import_fasta(path):
@@ -388,7 +388,7 @@ def test_fasta_import():
         return controller
 
     # test import of multiple sequences from one file
-    controller = import_fasta('testdata/basic_sequences.fa')
+    controller = import_fasta(os.path.join(test_data_dir, 'basic_sequences.fa'))
     coords = controller.session.query(Coordinate).all()
     assert len(coords) == 5
     assert coords[0].seqid == '1'
@@ -403,7 +403,7 @@ def test_fasta_import():
     assert coords[2].sequence == 'A' * 100
 
 
-def test_dummyloci_errors():
+def test_dummyloci_errors(test_data_dir):
     """Tests if all errors generated for dummyloci{.gff|.fa} are correct"""
 
     def error_in_list(error, error_list):
@@ -418,7 +418,8 @@ def test_dummyloci_errors():
         return False
 
     controller = ImportController(database_path='sqlite:///:memory:')
-    controller.add_genome('testdata/dummyloci.fa', 'testdata/dummyloci.gff', clean_gff=True)
+    controller.add_genome(os.path.join(test_data_dir, 'dummyloci.fa'),
+                          os.path.join(test_data_dir, 'dummyloci.gff'), clean_gff=True)
     error_types = [t.value for t in types.Errors]
     errors = controller.session.query(Feature).filter(Feature.type.in_(error_types)).all()
     coords = controller.session.query(Coordinate).all()
@@ -533,12 +534,13 @@ def test_dummyloci_errors():
     assert not errors
 
 
-def test_case_1():
+def test_case_1(test_data_dir):
     """Confirm the existence of all features of test case 1 of dummyloci.gff except
     for error features, which are tested in test_dummyloci_errors().
     Does not test the exact ids or exactly matching object relationships."""
     controller = ImportController(database_path='sqlite:///:memory:')
-    controller.add_genome('testdata/dummyloci.fa', 'testdata/dummyloci.gff', clean_gff=True)
+    controller.add_genome(os.path.join(test_data_dir, 'dummyloci.fa'),
+                          os.path.join(test_data_dir, 'dummyloci.gff'), clean_gff=True)
     query = controller.session.query
 
     sl = query(SuperLocus).filter(SuperLocus.given_name == 'gene0').one()
@@ -673,10 +675,11 @@ def test_case_1():
     assert not sl_objects
 
 
-def test_case_8():
+def test_case_8(test_data_dir):
     """Analogous to test_case_1()"""
     controller = ImportController(database_path='sqlite:///:memory:')
-    controller.add_genome('testdata/dummyloci.fa', 'testdata/dummyloci.gff', clean_gff=True)
+    controller.add_genome(os.path.join(test_data_dir, 'dummyloci.fa'),
+                          os.path.join(test_data_dir, 'dummyloci.gff'), clean_gff=True)
     query = controller.session.query
 
     sl = query(SuperLocus).\
@@ -777,11 +780,12 @@ def test_case_8():
     assert not sl_objects
 
 
-def test_non_coding_intron():
+def test_non_coding_intron(test_data_dir):
     """checks non coding introns are handled correctly (don't cause mismatched_ending_phase err when there is none)"""
     # test data has been simplified from an augustus run that previously resulted in erroneous masks
     controller = ImportController(database_path='sqlite:///:memory:')
-    controller.add_genome('testdata/exonexonCDS.fa', 'testdata/exonexonCDS.gff3', clean_gff=True)
+    controller.add_genome(os.path.join(test_data_dir, 'exonexonCDS.fa'),
+                          os.path.join(test_data_dir, 'exonexonCDS.gff3'), clean_gff=True)
     # one gene model on the + strand
     features = controller.session.query(Feature).filter(Feature.coordinate_id == 1).all()
     assert len(features) == 3
@@ -802,24 +806,24 @@ def test_non_coding_intron():
     assert (intron.start, intron.end) == (3310, 2195)
 
 
-def test_gff_gen():
-    gff_organizer = OrganizedGFFEntries('testdata/testerSl.gff3')
+def test_gff_gen(test_data_dir):
+    gff_organizer = OrganizedGFFEntries(os.path.join(test_data_dir, 'testerSl.gff3'))
     x = list(gff_organizer._gff_gen())
     assert len(x) == 103
     assert x[0].type == 'region'
     assert x[-1].type == 'CDS'
 
 
-def test_gff_useful_gen():
-    gff_organizer = OrganizedGFFEntries('testdata/testerSl.gff3')
+def test_gff_useful_gen(test_data_dir):
+    gff_organizer = OrganizedGFFEntries(os.path.join(test_data_dir, 'testerSl.gff3'))
     x = list(gff_organizer._useful_gff_entries())
     assert len(x) == 100  # started at 103, should drop the 3 region entries
     assert x[0].type == 'gene'
     assert x[-1].type == 'CDS'
 
 
-def test_gff_grouper():
-    gff_organizer = OrganizedGFFEntries('testdata/testerSl.gff3')
+def test_gff_grouper(test_data_dir):
+    gff_organizer = OrganizedGFFEntries(os.path.join(test_data_dir, 'testerSl.gff3'))
     gff_organizer.load_organized_entries()
     n_genes_seqid = {'NC_015438.2': 2, 'NC_015439.2': 2, 'NC_015440.2': 1}
     for seqid, count in n_genes_seqid.items():
@@ -888,6 +892,6 @@ def test_key_matching():
         print(mapper.key_vals)
 
 
-def test_gff_to_seqids():
-    x = helpers.get_seqids_from_gff('testdata/testerSl.gff3')
+def test_gff_to_seqids(test_data_dir):
+    x = helpers.get_seqids_from_gff(os.path.join(test_data_dir, 'testerSl.gff3'))
     assert x == {'NC_015438.2', 'NC_015439.2', 'NC_015440.2'}
