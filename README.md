@@ -3,10 +3,26 @@ Schema and API for a relational db that encodes gene models in an explicit, stru
 
 ## Installation
 
-```
+```sh
 conda env create -f rare-geenuff-conda-env.yml
 conda activate rare-geenuff
 pip install rare-geenuff
+```
+
+Contents of `rare-geenuff-conda-env.yml`:
+
+```yaml
+name: rare-geenuff
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - intervaltree>=3.0.2
+  - SQLAlchemy<2,>=1.3.12
+  - numpy>=1.18.1
+  - pandas
+  - biopython
+  - pyyaml
 ```
 
 ## beta disclaimer

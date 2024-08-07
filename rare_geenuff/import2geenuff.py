@@ -5,7 +5,7 @@ import yaml
 import logging
 import argparse
 
-from geenuff.applications.importer import ImportController
+from rare_geenuff.applications.importer import ImportController
 
 
 class PathFinder(object):
@@ -55,8 +55,32 @@ class PathFinder(object):
         assert len(possibilities) == 1, 'no(n) unique {} file found as input. Found: {}'.format(
                                             info, possibilities)
 
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--basedir', help='organized output (& input) directory. If this is not set, all four custom'
+                        'input parameters must be set.')
+    parser.add_argument('--config-file', type=str, default='config/import.yml')
 
-def main(args):
+    custominput = parser.add_argument_group('Override default with custom input/output location:')
+    custominput.add_argument('--gff3', help='gff3 formatted file to parse / standardize')
+    custominput.add_argument('--fasta', help='fasta file to parse standardize')
+    custominput.add_argument('--db-path', help='path of the GeenuFF database')
+    custominput.add_argument('--log-file', help="output path for import log (default basedir/output/import.log)")
+
+    parser.add_argument('--replace-db', action='store_true',
+                        help=('whether to override a GeenuFF database found at '
+                              'the default location or at the location of --db_path'))
+
+    genome_attr = parser.add_argument_group('Possible genome attributes:')
+    genome_attr.add_argument('--species', required=True, help='name of the species')
+    genome_attr.add_argument('--accession', default='', help='')
+    genome_attr.add_argument('--version', default='', help='genome version')
+    genome_attr.add_argument('--acquired-from', default='', help='genome source')
+    return parser.parse_args()
+
+
+def main():
+    args = parse_arguments()
     if args.basedir is None:
         assert all([x is not None for x in [args.fasta, args.gff3, args.db_path, args.log_file]]), \
             "if basedir is none, all three custom input/output files must be manually specified " \
@@ -96,27 +120,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--basedir', help='organized output (& input) directory. If this is not set, all four custom'
-                        'input parameters must be set.')
-    parser.add_argument('--config-file', type=str, default='config/import.yml')
-
-    custominput = parser.add_argument_group('Override default with custom input/output location:')
-    custominput.add_argument('--gff3', help='gff3 formatted file to parse / standardize')
-    custominput.add_argument('--fasta', help='fasta file to parse standardize')
-    custominput.add_argument('--db-path', help='path of the GeenuFF database')
-    custominput.add_argument('--log-file', help="output path for import log (default basedir/output/import.log)")
-
-    parser.add_argument('--replace-db', action='store_true',
-                        help=('whether to override a GeenuFF database found at '
-                              'the default location or at the location of --db_path'))
-
-    genome_attr = parser.add_argument_group('Possible genome attributes:')
-    genome_attr.add_argument('--species', required=True, help='name of the species')
-    genome_attr.add_argument('--accession', default='', help='')
-    genome_attr.add_argument('--version', default='', help='genome version')
-    genome_attr.add_argument('--acquired-from', default='', help='genome source')
-
-    args = parser.parse_args()
-
-    main(args)
+    main()
