@@ -23,7 +23,7 @@ def main():
     ftp = ftplib.FTP(DATA_FTP)
     ftp.login()
     for ftp_path in DATA_PATHS:
-            with open(os.path.join(dir, os.path.basename(ftp_path)), "wb") as f:
+            with open(os.path.join(args.working_dir, os.path.basename(ftp_path)), "wb") as f:
                 ftp.retrbinary(f"RETR {ftp_path}", f.write)
 
 
