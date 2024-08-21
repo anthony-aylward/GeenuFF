@@ -35,3 +35,4 @@ packages = [
 ]
 [project.scripts]
 rare-geenuff-import = "rare_geenuff.import2geenuff:main"
+rare-geenuff-example = "rare_geenuff.example:main"
