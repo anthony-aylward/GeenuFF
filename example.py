@@ -19,7 +19,8 @@ DATA_PATHS = (
 
 def parse_arguments():
     parser = ArgumentParser('GeenuFF example')
-    parser.add_argument('-d', '--working-dir', default=os.path.join(os.getcwd(), 'three_algae'))
+    parser.add_argument('--working-dir', default=os.path.join(os.getcwd(), 'three_algae'))
+    parser.add_argument('--download-example-data', action='store_true')
     return parser.parse_args()
 
 
@@ -31,23 +32,27 @@ def main():
     # The results will then be located in <your_species>/output
     # If desired, you can alternatively specify all file parameters individually
     # --gff3 <your.gff3> --fasta <your.fa> --db-path <your_output_genuff.sqlite3> --log-file <your_output.log>
-    if not os.path.isdir(args.working_dir):
-        os.mkdir(args.working_dir)
+    if args.download_example_data:
+        if not os.path.isdir(args.working_dir):
+            os.mkdir(args.working_dir)
+        for sp in SPECIES:
+            if not os.path.isdir(os.path.join(args.working_dir, sp)):
+                os.mkdir(os.path.join(args.working_dir, sp))
+            if not os.path.isdir(os.path.join(args.working_dir, sp, 'input')):
+                os.mkdir(os.path.join(args.working_dir, sp, 'input'))
+        ftp = ftplib.FTP(DATA_FTP)
+        ftp.login()
+        for species, ftp_path in DATA_PATHS:
+            basename = os.path.basename(ftp_path)
+            with open(os.path.join(args.working_dir, species, 'input', basename), "wb") as f:
+                ftp.retrbinary(f"RETR {ftp_path}", f.write)
+            with gzip.open(os.path.join(args.working_dir, species, 'input', basename), 'rb') as f_in, \
+                open(os.path.join(args.working_dir, species, 'input', basename[:-3]), 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+            os.remove(os.path.join(args.working_dir, species, 'input', basename))
     for sp in SPECIES:
-        if not os.path.isdir(os.path.join(args.working_dir, sp)):
-            os.mkdir(os.path.join(args.working_dir, sp))
-        if not os.path.isdir(os.path.join(args.working_dir, sp, 'input')):
-            os.mkdir(os.path.join(args.working_dir, sp, 'input'))
-    ftp = ftplib.FTP(DATA_FTP)
-    ftp.login()
-    for species, ftp_path in DATA_PATHS:
-        basename = os.path.basename(ftp_path)
-        with open(os.path.join(args.working_dir, species, 'input', basename), "wb") as f:
-            ftp.retrbinary(f"RETR {ftp_path}", f.write)
-        with gzip.open(os.path.join(args.working_dir, species, 'input', basename), 'rb') as f_in, \
-            open(os.path.join(args.working_dir, species, 'input', basename[:-3]), 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out)
-        os.remove(os.path.join(args.working_dir, species, 'input', basename))
+        run(('rare-geenuff-import', '--basedir', sp, '--species', sp))
+
 
 if __name__ == '__main__':
     main()
