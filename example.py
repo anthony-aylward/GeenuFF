@@ -51,7 +51,8 @@ def main():
                 shutil.copyfileobj(f_in, f_out)
             os.remove(os.path.join(args.working_dir, species, 'input', basename))
     for sp in SPECIES:
-        run(('rare-geenuff-import', '--basedir', sp, '--species', sp))
+        run(('rare-geenuff-import', '--basedir', os.path.join(args.working_dir, sp),
+             '--species', sp))
 
 
 if __name__ == '__main__':

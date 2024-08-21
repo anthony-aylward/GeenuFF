@@ -19,7 +19,7 @@ class PathFinder(object):
         self.species = species
         self.input = '{}/{}/'.format(self.basedir, PathFinder.INPUT)
         self.output = '{}/{}/'.format(self.basedir, PathFinder.OUTPUT)
-        if args.basedir is not None:
+        if basedir is not None:
             for dir in [self.basedir, self.input, self.output]:
                 os.makedirs(dir, exist_ok=True)
             self.problems_out = '{}import.log'.format(self.output)
