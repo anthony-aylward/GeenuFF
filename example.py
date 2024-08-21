@@ -31,6 +31,8 @@ def main():
     # The results will then be located in <your_species>/output
     # If desired, you can alternatively specify all file parameters individually
     # --gff3 <your.gff3> --fasta <your.fa> --db-path <your_output_genuff.sqlite3> --log-file <your_output.log>
+    if not os.path.isdir(args.working_dir):
+        os.mkdir(args.working_dir)
     for sp in SPECIES:
         if not os.path.isdir(os.path.join(args.working_dir, sp)):
             os.mkdir(os.path.join(args.working_dir, sp))
