@@ -1,7 +1,7 @@
-# GeenuFF
+# Rare-GeenuFF (Rare fork of GeenuFF)
 
 ## Source & Install
-See [github repository](https://github.com/weberlab-hhu/GeenuFF)
+See [github repository](https://github.com/anthony-aylward/GeenuFF)
 
 ## What
 Relational db Schema & Api to store and interpret gene structure

@@ -1,4 +1,4 @@
-# Command line tools
+# Command line tools (Rare-GeenuFF)
 
 __Warning! little about this is stable or tested yet__
 
@@ -11,7 +11,7 @@ Capital letters and `<>` indicate what must be user specified.
 
 ```
 
-import2geenuff.py --fasta <PATH_TO_GENOME_FASTA_FILE> --gff3 <PATH_TO_GFF3_FILE> \
+rare-geenuf-import --fasta <PATH_TO_GENOME_FASTA_FILE> --gff3 <PATH_TO_GFF3_FILE> \
     --db-path <YOUR_DATA_NAME>.sqlite3 --log-file <YOUR_DATA_NAME>.import.log --species <SPECIES_NAME>
 ```
 
@@ -19,7 +19,7 @@ Or with some of the testdata filled in:
 ```
 geenuff_path=<PATH/TO/GeenuFF/>
 
-import2geenuff.py --fasta $geenuff_path/geenuff/testdata/exporter.fa \
+rare-geenuff-import --fasta $geenuff_path/geenuff/testdata/exporter.fa \
     --gff3 $geenuff_path/geenuff/testdata/exporter.gff3 \
     --db-path dummy.sqlite3 --log-file dummy.import.log --species dummy
 ```
@@ -34,7 +34,7 @@ the `--basedir` option can be used to simplify/structure input and output.
 <BASEDIR>/input/<YOUR_FILE>.gff3
 
 # simplified import
-import2geenuff.py --basedir <BASEDIR> --species <SPECIES_NAME>
+rare-geenuff-import --basedir <BASEDIR> --species <SPECIES_NAME>
 
 # the output files "<SPECIES_NAME>.sqlite3" and "import.log" will be written in
 # the directory <BASEDIR>/output/
