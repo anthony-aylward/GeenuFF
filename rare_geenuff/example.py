@@ -21,7 +21,7 @@ def parse_arguments():
     parser = ArgumentParser('GeenuFF example')
     parser.add_argument('--working-dir', metavar='<working_dir/>',
                         default=os.path.join(os.getcwd(), 'three_algae'),
-                        help=f'default: ({os.path.join(os.getcwd(), 'three_algae')})')
+                        help=f'default: ({os.path.join(os.getcwd(), "three_algae")})')
     parser.add_argument('--download-example-data', action='store_true')
     return parser.parse_args()
 
@@ -54,7 +54,7 @@ def main():
             os.remove(os.path.join(args.working_dir, species, 'input', basename))
     for sp in SPECIES:
         run(('rare-geenuff-import', '--basedir', os.path.join(args.working_dir, sp),
-             '--species', sp))
+             '--species', sp), check=False)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,10 @@
-# GeenuFF
-Schema and API for a relational db that encodes gene models in an explicit, structured, and robust fashion.
+# Rare-GeenuFF (Rare fork of GeenuFF)
+
+The original description of GeenuFF reads:
+
+> Schema and API for a relational db that encodes gene models in an explicit, structured, and robust fashion.
+
+This package is a fork of the original GeenuFF, with some quality of life improvements to the code.
 
 ## Installation
 
@@ -45,15 +50,18 @@ A more extensive description can be found [here](https://weberlab-hhu.github.io/
 conda install -c conda-forge pytest
 git clone -b rare --single-branch https://github.com/anthony-aylward/GeenuFF.git
 cd GeenuFF
-pytest
+python -m pytest
 ```
 
 ## usage
-You can run `bash example.sh` for a quick start with public data.
- This will setup the folder 'three_algae', download public data in
- the expected format, and import it into a geenuff spec db for each
-species. For more information please see 
-[the api docs](https://weberlab-hhu.github.io/GeenuFF/api.html).
+You can run the package script command `rare-geenuff-example` for a quick start with public data:
+
+```sh
+rare-geenuff-example --download-example-data
+```
+
+This will setup the folder `three_algae`, download public data in the expected format, and import it into a geenuff spec db for each species. For more information please see [the api docs](https://weberlab-hhu.github.io/GeenuFF/api.html). The `--download-example-data` option is only necessary the first time running `rare-geenuff-example`, or if the `three_algae` folder is not present.
+
 
 ## Major plans
 * Add a validation module to check structure of gene models.
