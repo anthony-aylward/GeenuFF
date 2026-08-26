@@ -132,9 +132,9 @@ It's about the most naive implementation possible at the moment
 but geenuff can now query an region and return a somewhat flattened
 json output.
 
-e.g. were PATH_TO_GEENUFF_DB was imported from the test files:
+e.g. where PATH_TO_GEENUFF_DB was imported from the test files:
 "geenuff/testdata/exporting.\*" as in the second example for 
-the `import2geenuff.py` section above.
+the `rare-geenuff-import` section above.
 
 ```
 from geenuff.applications.exporters.json import JsonExportController

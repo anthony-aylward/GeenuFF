@@ -62,7 +62,6 @@ rare-geenuff-example --download-example-data
 
 This will setup the folder `three_algae`, download public data in the expected format, and import it into a geenuff spec db for each species. For more information please see [the api docs](https://anthony-aylward.github.io/GeenuFF/api.html). The `--download-example-data` option is only necessary the first time running `rare-geenuff-example`, or if the `three_algae` folder is not present.
 
-
 ## Major plans
 * Add a validation module to check structure of gene models.
 * Add extraction of raw & mature transcript, CDS, and protein sequence as a demo application.
